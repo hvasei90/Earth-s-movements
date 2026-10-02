@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>حرکات زمین | ارائه تعاملی</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="stars"></div>
+  <header class="topbar">
+    <div class="brand"><span class="brand-dot"></span><span>حرکات زمین</span></div>
+    <nav>
+      <a href="#rotation">حرکت وضعی</a>
+      <a href="#time">زمان</a>
+      <a href="#seasons">فصل‌ها</a>
+      <a href="#revolution">حرکت انتقالی</a>
+    </nav>
+    <button class="theme-btn" id="themeBtn" aria-label="تغییر حالت نمایش">☼</button>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow">زمین را حرکت بده، نه فقط متن را بخوان</div>
+        <h1>حرکات زمین<br><span>به‌صورت سه‌بعدی و تعاملی</span></h1>
+        <p>یک ارائه‌ی تعاملی برای فهم حرکت وضعی، اختلاف ساعت، مناطق زمانی، حرکت انتقالی، فصل‌ها، انقلاب‌ها و اعتدالین.</p>
+        <div class="hero-actions">
+          <a class="primary" href="#rotation">شروع کاوش</a>
+          <button class="ghost" id="focusGlobe">مشاهده‌ی زمین</button>
+        </div>
+        <div class="quick-facts">
+          <div><b>۲۴</b><span>منطقه زمانی</span></div>
+          <div><b>۱۵°</b><span>تقریب هر منطقه</span></div>
+          <div><b>۲</b><span>حرکت اصلی زمین</span></div>
+        </div>
+      </div>
+      <div class="hero-globe">
+        <div id="globeViz"></div>
+        <div class="globe-label label-day">روز</div>
+        <div class="globe-label label-night">شب</div>
+        <div class="orbit-line"></div>
+      </div>
+    </section>
+
+    <section class="section" id="rotation">
+      <div class="section-head">
+        <span class="section-number">01</span>
+        <div><div class="eyebrow">حرکت وضعی</div><h2>چرخش زمین به دور محور خودش</h2></div>
+      </div>
+      <div class="grid two">
+        <article class="card interactive-card">
+          <div class="card-icon">↻</div>
+          <h3>روز و شب چگونه پدید می‌آیند؟</h3>
+          <p>در هر لحظه نیمی از زمین رو به خورشید روشن و نیمه‌ی دیگر در تاریکی است. چرخش زمین باعث می‌شود هر نقطه به‌طور پیوسته بین بخش روشن و تاریک جابه‌جا شود.</p>
+          <div class="daynight-demo">
+            <div class="sun-dot"></div><div class="earth-demo"><span></span></div>
+          </div>
+          <button class="small-btn" id="toggleDay">توقف / ادامه‌ی چرخش</button>
+        </article>
+        <article class="card">
+          <div class="card-icon">☀</div>
+          <h3>حرکت ظاهری خورشید</h3>
+          <p>ما خورشید را از شرق در آسمان می‌بینیم و در غرب غروب می‌کند؛ اما این جابه‌جایی ظاهری نتیجه‌ی چرخش زمین به دور محور خودش است.</p>
+          <div class="east-west"><span>شرق</span><div class="arrow-track"><i></i></div><span>غرب</span></div>
+        </article>
+      </div>
+      <div class="info-strip">
+        <div><b>پیامد ۱</b><span>پدید آمدن شب و روز</span></div>
+        <div><b>پیامد ۲</b><span>تفاوت زمان در نقاط مختلف زمین</span></div>
+        <div><b>نکته</b><span>خورشید در واقع در آسمان روزانه دور زمین نمی‌چرخد.</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="time">
+      <div class="section-head">
+        <span class="section-number">02</span>
+        <div><div class="eyebrow">زمان و زمین</div><h2>چرا ساعت شهرها با هم فرق دارد؟</h2></div>
+      </div>
+      <div class="time-lab card">
+        <div class="lab-controls">
+          <div>
+            <label for="citySelect">یک شهر را انتخاب کن</label>
+            <select id="citySelect">
+              <option value="0">گرینویچ</option>
+              <option value="3.5">تهران</option>
+              <option value="1">پاریس</option>
+              <option value="9">توکیو</option>
+              <option value="8">پکن</option>
+              <option value="-5">نیویورک</option>
+              <option value="-9">آلاسکا</option>
+              <option value="10">سیدنی</option>
+            </select>
+          </div>
+          <div class="time-result"><span>اختلاف با مبدأ</span><strong id="offsetText">۰ ساعت</strong></div>
+        </div>
+        <div class="time-zone-wheel" id="timeWheel">
+          <div class="wheel-center"><b id="wheelHour">12:00</b><span>زمان نمونه</span></div>
+        </div>
+        <div class="zone-scale"><span>غرب</span><div class="scale-line"><i id="zoneMarker"></i></div><span>شرق</span></div>
+      </div>
+      <div class="grid three mini-cards">
+        <article class="card"><h3>زمان واقعی</h3><p>بر اساس موقعیت خورشید در آسمان تعریف می‌شود و از مکانی به مکان دیگر تغییر می‌کند.</p></article>
+        <article class="card"><h3>زمان رسمی</h3><p>برای هماهنگ‌کردن زندگی روزانه، کشورها و مناطق از ساعت توافقی استفاده می‌کنند.</p></article>
+        <article class="card"><h3>مناطق زمانی</h3><p>زمین به‌صورت قراردادی به ۲۴ منطقه تقسیم شده و هر منطقه حدود ۱۵ درجه طول جغرافیایی را پوشش می‌دهد.</p></article>
+      </div>
+    </section>
+
+    <section class="section" id="date-line">
+      <div class="section-head">
+        <span class="section-number">03</span>
+        <div><div class="eyebrow">مرز تغییر تاریخ</div><h2>خط بین‌المللی تاریخ</h2></div>
+      </div>
+      <div class="date-grid">
+        <article class="card date-card">
+          <div class="date-icon">←→</div>
+          <h3>عبور از خط تاریخ</h3>
+          <p>در حوالی ۱۸۰ درجه‌ی طول جغرافیایی، عبور از یک سوی خط بین‌المللی تاریخ به سوی دیگر با تغییر تاریخ همراه است.</p>
+          <div class="date-switch"><button id="westDate">شرق → غرب</button><button id="eastDate">غرب → شرق</button></div>
+          <div id="dateAnswer" class="answer-box">یک جهت، یک روز به تقویم اضافه می‌کند و جهت دیگر، یک روز کم می‌کند.</div>
+        </article>
+        <article class="card map-card">
+          <div class="mini-map"><div class="equator"></div><div class="date-line"></div><span>خط تاریخ</span></div>
+          <div class="map-caption">خط تاریخ یک خط قراردادی است و مسیر آن دقیقاً روی تمام طول نصف‌النهار ۱۸۰ درجه منطبق نیست.</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="seasons">
+      <div class="section-head">
+        <span class="section-number">04</span>
+        <div><div class="eyebrow">حرکت انتقالی + کجی محور</div><h2>فصل‌ها چرا به وجود می‌آیند؟</h2></div>
+      </div>
+      <div class="seasons-lab card">
+        <div class="orbit-stage">
+          <div class="sun-core">☀</div>
+          <div class="orbit-ring"></div>
+          <div class="earth-orbit-pos" id="earthOrbitPos"><div class="earth-ball"></div></div>
+          <div class="season-pointer" id="seasonPointer"></div>
+        </div>
+        <div class="season-info">
+          <div class="season-badge" id="seasonBadge">بهار</div>
+          <h3 id="seasonTitle">اعتدال بهاری</h3>
+          <p id="seasonText">در این وضعیت، طول روز و شب در بسیاری از نقاط زمین به یکدیگر نزدیک می‌شود.</p>
+          <input type="range" min="0" max="359" value="0" id="orbitSlider">
+          <div class="range-labels"><span>اعتدال بهاری</span><span>انقلاب تابستانی</span><span>اعتدال پاییزی</span><span>انقلاب زمستانی</span></div>
+        </div>
+      </div>
+      <div class="grid two">
+        <article class="card tilt-card">
+          <h3>محور زمین مایل است</h3>
+          <div class="tilt-visual"><div class="tilt-earth"></div><div class="tilt-axis"></div></div>
+          <p>محور چرخش زمین نسبت به صفحه‌ی مدار مایل است. این ویژگی در کنار حرکت انتقالی باعث تغییر زاویه‌ی تابش خورشید و طول روز و شب در طول سال می‌شود.</p>
+        </article>
+        <article class="card">
+          <h3>چهار نقطه‌ی مهم سال</h3>
+          <div class="season-list">
+            <div><span class="dot spring"></span><b>اعتدال بهاری</b><small>روز و شب تقریباً برابر</small></div>
+            <div><span class="dot summer"></span><b>انقلاب تابستانی</b><small>بلندترین روز در نیمکره شمالی</small></div>
+            <div><span class="dot autumn"></span><b>اعتدال پاییزی</b><small>روز و شب تقریباً برابر</small></div>
+            <div><span class="dot winter"></span><b>انقلاب زمستانی</b><small>کوتاه‌ترین روز در نیمکره شمالی</small></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="hemispheres">
+      <div class="section-head">
+        <span class="section-number">05</span>
+        <div><div class="eyebrow">دو نیمکره</div><h2>وقتی یک نیمکره تابستان دارد، دیگری چه می‌شود؟</h2></div>
+      </div>
+      <div class="hemisphere-card card">
+        <div class="hemi hemi-north"><div class="hemi-glow"></div><h3>نیمکره شمالی</h3><span id="northSeason">تابستان</span></div>
+        <div class="versus">↕</div>
+        <div class="hemi hemi-south"><div class="hemi-glow"></div><h3>نیمکره جنوبی</h3><span id="southSeason">زمستان</span></div>
+        <div class="hemi-slider"><input type="range" min="0" max="100" value="50" id="hemiSlider"></div>
+      </div>
+    </section>
+
+    <section class="section" id="revolution">
+      <div class="section-head">
+        <span class="section-number">06</span>
+        <div><div class="eyebrow">حرکت انتقالی</div><h2>گردش زمین به دور خورشید</h2></div>
+      </div>
+      <div class="grid two">
+        <article class="card big-number"><span class="big">۱ سال</span><h3>یک دور کامل مداری</h3><p>زمین در همان حال که به دور محور خود می‌چرخد، به دور خورشید نیز گردش می‌کند.</p></article>
+        <article class="card big-number"><span class="big">≈ ۳۰ km/s</span><h3>سرعت میانگین مداری</h3><p>مدار زمین دقیقاً دایره‌ای نیست و شکل آن به بیضی نزدیک است؛ بنابراین فاصله‌ی زمین تا خورشید در طول مدار ثابت نمی‌ماند.</p></article>
+      </div>
+      <div class="year-demo card">
+        <div class="year-track"><div class="year-sun">☀</div><div class="year-orbit"></div><div class="year-earth" id="yearEarth"></div></div>
+        <div class="year-controls"><button class="small-btn" id="playYear">پخش حرکت سالانه</button><span id="yearProgress">۰٪</span></div>
+      </div>
+      <div class="leap-year card">
+        <div class="calendar-icon">29</div>
+        <div><h3>سال کبیسه</h3><p>مدت واقعی گردش زمین دقیقاً برابر با ۳۶۵ روز نیست و حدود ۶ ساعت اضافه دارد. برای هماهنگ‌کردن تقویم با چرخه‌ی واقعی سال، این اختلاف در طول چند سال جبران می‌شود.</p></div>
+      </div>
+    </section>
+
+    <section class="section recap">
+      <div class="section-head">
+        <span class="section-number">07</span>
+        <div><div class="eyebrow">جمع‌بندی تصویری</div><h2>دو حرکت، چند نتیجه</h2></div>
+      </div>
+      <div class="recap-grid">
+        <div class="recap-item"><span>↻</span><h3>حرکت وضعی</h3><p>شب و روز + اختلاف زمان</p></div>
+        <div class="recap-item"><span>☀</span><h3>حرکت انتقالی</h3><p>در کنار کجی محور → فصل‌ها</p></div>
+        <div class="recap-item"><span>15°</span><h3>مناطق زمانی</h3><p>تقسیم قراردادی برای هماهنگی ساعت</p></div>
+        <div class="recap-item"><span>⇄</span><h3>خط تاریخ</h3><p>تغییر تاریخ هنگام عبور از مرز قراردادی</p></div>
+      </div>
+    </section>
+  </main>
+
+  <footer><span>حرکات زمین</span><span>ارائه‌ی تعاملی علوم</span></footer>
+
+  <script src="https://unpkg.com/globe.gl"></script>
+  <script src="app.js"></script>
+</body>
+</html>
