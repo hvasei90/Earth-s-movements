@@ -1,1 +1,122 @@
-<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>حرکات زمین</title><link rel="stylesheet" href="styles.css"><script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script><script src="https://unpkg.com/globe.gl"></script></head><body><div id="globe"></div><div class="top"><h1>حرکات زمین</h1><p id="hint">یک موضوع را انتخاب کن</p></div><div class="buttons"><button data-mode="rotation">حرکت وضعی</button><button data-mode="daynight">شب و روز</button><button data-mode="timezones">اختلاف ساعت</button><button data-mode="orbit">حرکت انتقالی</button><button data-mode="seasons">فصل‌ها و کجی محور</button><button data-mode="equinox">انقلاب و اعتدال</button></div><aside id="info"><button id="close">×</button><h2 id="title"></h2><div id="text"></div></aside><div id="legend"></div><script src="app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>آزمایشگاه سه‌بعدی حرکات زمین</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">آزمایشگاه تعاملی علوم</div>
+        <h1>حرکات زمین و پیدایش روز، شب و فصل‌ها</h1>
+      </div>
+      <div class="status">
+        <span id="seasonDot"></span>
+        <span id="seasonName">تابستان نیمکره شمالی</span>
+      </div>
+    </header>
+
+    <main>
+      <section id="sceneWrap">
+        <div id="scene"></div>
+
+        <div class="hud hud-left">
+          <div class="hud-card">
+            <b id="dayNightText">روز</b>
+            <span id="localTimeText">ساعت 12:00</span>
+          </div>
+        </div>
+
+        <div class="hud hud-right">
+          <div class="hud-card">
+            <b>محور زمین</b>
+            <span>23.5° انحراف</span>
+          </div>
+          <div class="hud-card">
+            <b>حرکت وضعی</b>
+            <span id="rotationSpeedText">1 دور / 24 ساعت</span>
+          </div>
+        </div>
+
+        <div class="legend">
+          <span><i class="sun"></i> خورشید</span>
+          <span><i class="day"></i> بخش روشن</span>
+          <span><i class="night"></i> بخش شب</span>
+          <span><i class="axis"></i> محور زمین</span>
+        </div>
+      </section>
+
+      <aside class="controls">
+        <div class="panel">
+          <h2>نمایش</h2>
+          <div class="button-grid">
+            <button class="mode active" data-mode="earth">🌍 زمین</button>
+            <button class="mode" data-mode="seasons">☀️ فصل‌ها</button>
+            <button class="mode" data-mode="timezones">🕐 ساعت‌ها</button>
+            <button class="mode" data-mode="sunlight">🌗 روز و شب</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>کنترل حرکت</h2>
+          <label>سرعت شبیه‌سازی <span id="speedValue">1×</span></label>
+          <input id="speed" type="range" min="0" max="5" value="1" step="0.5">
+
+          <div class="button-row">
+            <button id="playBtn">▶ اجرا</button>
+            <button id="resetBtn">↺ شروع</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>مکان روی زمین</h2>
+          <label>عرض جغرافیایی</label>
+          <input id="lat" type="range" min="-90" max="90" value="35">
+          <div class="value-line"><span>جنوب</span><b id="latValue">35° شمالی</b><span>شمال</span></div>
+
+          <label>طول جغرافیایی</label>
+          <input id="lon" type="range" min="-180" max="180" value="51">
+          <div class="value-line"><span>غرب</span><b id="lonValue">51° شرقی</b><span>شرق</span></div>
+
+          <div class="location-card">
+            <div><span>ساعت محلی تقریبی</span><b id="placeTime">12:00</b></div>
+            <div><span>وضعیت</span><b id="placeState">روز</b></div>
+          </div>
+        </div>
+
+        <div class="panel season-panel">
+          <h2>موقعیت زمین در مدار</h2>
+          <div class="season-buttons">
+            <button data-season="0">🌱 اعتدال بهاری</button>
+            <button data-season="90">☀️ انقلاب تابستانی</button>
+            <button data-season="180">🍂 اعتدال پاییزی</button>
+            <button data-season="270">❄️ انقلاب زمستانی</button>
+          </div>
+          <div class="orbit-info">
+            <div><span>روز سال</span><b id="yearDay">172</b></div>
+            <div><span>فصل شمالی</span><b id="seasonShort">تابستان</b></div>
+          </div>
+        </div>
+
+        <div class="panel info-panel" id="infoPanel">
+          <h2>آنچه می‌بینید</h2>
+          <p id="infoText">زمین به دور محور خود می‌چرخد؛ نیمه‌ای که رو به خورشید است روشن و نیمه دیگر در شب است.</p>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="script.js"></script>
+</body>
+</html>
