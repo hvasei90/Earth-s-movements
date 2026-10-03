@@ -79,21 +79,29 @@
     </div>
     <div class="season-readout">
       <div><span>میل خورشید</span><b id="declination">0.00°</b></div>
-      <div><span>طول روز در استوا</span><b>≈ 12 ساعت</b></div>
+      <div><span>تابش عمودی</span><b id="solarTarget">استوا</b></div>
       <div><span>طول روز در عرض انتخابی</span><b id="dayLength">12:00</b></div>
     </div>
+    <div class="season-explain" id="seasonExplain">خورشید عمود بر استوا می‌تابد؛ طول روز و شب تقریباً برابر است.</div>
   </section>
 
   <section class="card mode-card">
-    <div class="mode-row">
-      <button id="liveBtn">واقعی</button>
-      <button id="simBtn" class="active">شبیه‌سازی</button>
-    </div>
+    <div class="card-title">حرکت انتقالی در طول سال</div>
     <div class="sim-controls">
       <button id="dayBack">− روز</button>
-      <button id="play" class="play">▶</button>
+      <button id="play" class="play">❚❚</button>
       <button id="dayForward">+ روز</button>
-      <span id="speed">۱ روز / ۲ ثانیه</span>
+    </div>
+    <div class="speed-row">
+      <span>سرعت</span>
+      <input id="speedRange" type="range" min="0.5" max="30" step="0.5" value="1">
+      <b id="speedValue">۱ روز / ۲ ثانیه</b>
+    </div>
+    <div class="speed-presets">
+      <button data-speed="1">۱</button>
+      <button data-speed="5">۵</button>
+      <button data-speed="10">۱۰</button>
+      <button data-speed="30">۳۰</button>
     </div>
     <div class="sim-date" id="simDate">۲۱ مارس</div>
   </section>
@@ -113,6 +121,7 @@
   <div class="world-label night-label">شب</div>
   <div class="world-label axis-label">محور چرخش<br><b>۲۳٫۴۴°</b></div>
   <div class="world-label orbit-label">مدار انتقالی</div>
+  <div class="world-label solar-target-label" id="solarTargetLabel">تابش عمودی</div>
 </div>
 
 <script type="module" src="app.js"></script>
