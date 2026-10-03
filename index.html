@@ -1,96 +1,120 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Earth 3D</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>زمین | حرکت وضعی، زمان و فصول</title>
+<link rel="stylesheet" href="style.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+  }
+}
+</script>
 </head>
 <body>
-  <div id="app">
-    <canvas id="scene"></canvas>
+<canvas id="scene"></canvas>
 
-    <header class="topbar">
-      <div class="brand">EARTH <span>3D</span></div>
-      <div class="season-pill" id="seasonPill">اعتدال بهاری</div>
-    </header>
+<div id="ui">
+  <header class="top">
+    <div class="logo">EARTH <b>3D</b></div>
+    <div class="scene-title" id="sceneTitle">اختلاف زمان</div>
+  </header>
 
-    <aside class="panel left">
-      <div class="panel-title">زمان</div>
-      <div class="clock-big" id="clock">12:00:00</div>
-      <div class="date-row">
-        <span id="dateText">21 مارس</span>
-        <span id="dayOfYear">روز 80</span>
-      </div>
+  <section class="card time-card">
+    <div class="eyebrow">زمان در موقعیت انتخاب‌شده</div>
+    <div class="location-name" id="locationName">تهران</div>
+    <div class="coords"><span id="lonText">51.4°E</span><span id="latText">35.7°N</span></div>
 
-      <div class="time-box">
-        <div class="time-label">زمان واقعی خورشیدی</div>
-        <div class="time-value" id="solarTime">12:00</div>
+    <div class="clocks">
+      <div class="clock real">
+        <div class="clock-head"><span>ساعت واقعی خورشیدی</span><i></i></div>
+        <strong id="solarClock">12:00:00</strong>
+        <small id="solarState">ظهر خورشیدی</small>
       </div>
-      <div class="time-box">
-        <div class="time-label">زمان رسمی</div>
-        <div class="time-value" id="zoneTime">12:00</div>
-      </div>
-
-      <div class="location-row">
-        <span>طول جغرافیایی</span>
-        <strong id="longitudeValue">0°</strong>
-      </div>
-      <input id="longitude" type="range" min="-180" max="180" value="0" step="1">
-
-      <div class="toggle-row">
-        <button class="mode active" data-mode="live">واقعی</button>
-        <button class="mode" data-mode="sim">شبیه‌سازی</button>
-      </div>
-    </aside>
-
-    <aside class="panel right">
-      <div class="panel-title">فصل‌ها</div>
-      <div class="season-list">
-        <button data-season="march" class="season-btn active">
-          <span class="dot spring"></span><span>اعتدال بهاری</span><b>20/21 مارس</b>
-        </button>
-        <button data-season="june" class="season-btn">
-          <span class="dot summer"></span><span>انقلاب تابستانی</span><b>20/21 ژوئن</b>
-        </button>
-        <button data-season="september" class="season-btn">
-          <span class="dot autumn"></span><span>اعتدال پاییزی</span><b>22/23 سپتامبر</b>
-        </button>
-        <button data-season="december" class="season-btn">
-          <span class="dot winter"></span><span>انقلاب زمستانی</span><b>21/22 دسامبر</b>
-        </button>
-      </div>
-
-      <div class="orbit-readout">
-        <div><span>میل خورشیدی</span><strong id="declination">0.00°</strong></div>
-        <div><span>زاویه محور</span><strong>23.44°</strong></div>
-      </div>
-    </aside>
-
-    <div class="bottom">
-      <div class="speed-control">
-        <button id="reverse">−</button>
-        <button id="play" class="play">▶</button>
-        <button id="forward">+</button>
-        <span id="speedText">1 روز / 4 ثانیه</span>
-      </div>
-      <div class="legend">
-        <span><i class="day"></i>روز</span>
-        <span><i class="night"></i>شب</span>
-        <span><i class="axis"></i>محور</span>
-        <span><i class="zone"></i>قاچ ۱۵°</span>
+      <div class="clock official">
+        <div class="clock-head"><span>ساعت رسمی</span><i></i></div>
+        <strong id="officialClock">12:00:00</strong>
+        <small id="officialState">منطقه +3:30</small>
       </div>
     </div>
 
-    <div class="hint" id="hint">برای چرخاندن کره، بکشید • برای زوم، اسکرول کنید</div>
-  </div>
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js"
-    }
-  }
-</script>
+    <div class="difference">
+      <span>اختلاف ساعت واقعی و رسمی</span>
+      <b id="difference">00:00</b>
+    </div>
+
+    <div class="sun-times">
+      <div><span>طلوع تقریبی</span><b id="sunrise">06:00</b></div>
+      <div><span>تا ظهر</span><b id="toNoon">00:00</b></div>
+      <div><span>غروب تقریبی</span><b id="sunset">18:00</b></div>
+    </div>
+  </section>
+
+  <section class="card location-card">
+    <div class="card-title">طول جغرافیایی</div>
+    <div class="longitude-scale">
+      <div class="lon-value" id="lonBig">51.4° E</div>
+      <div class="zone-value">منطقه زمانی <b id="zoneText">+3:30</b></div>
+    </div>
+    <input id="longitude" type="range" min="-180" max="180" step=".1" value="51.4">
+    <div class="scale-labels"><span>180°W</span><span>0°</span><span>180°E</span></div>
+    <div class="city-buttons">
+      <button data-lon="51.4" data-lat="35.7" data-name="تهران">تهران</button>
+      <button data-lon="0" data-lat="51.5" data-name="گرینویچ">گرینویچ</button>
+      <button data-lon="101.7" data-lat="3.1" data-name="کوالالامپور">مالزی</button>
+      <button data-lon="-99.1" data-lat="19.4" data-name="مکزیکوسیتی">مکزیک</button>
+    </div>
+  </section>
+
+  <section class="card season-card">
+    <div class="card-title">موقعیت زمین در مدار</div>
+    <div class="season-grid">
+      <button data-season="march" class="season active"><span>اعتدال بهاری</span><b>۲۰/۲۱ مارس</b></button>
+      <button data-season="june" class="season"><span>انقلاب تابستانی</span><b>۲۰/۲۱ ژوئن</b></button>
+      <button data-season="september" class="season"><span>اعتدال پاییزی</span><b>۲۲/۲۳ سپتامبر</b></button>
+      <button data-season="december" class="season"><span>انقلاب زمستانی</span><b>۲۱/۲۲ دسامبر</b></button>
+    </div>
+    <div class="season-readout">
+      <div><span>میل خورشید</span><b id="declination">0.00°</b></div>
+      <div><span>طول روز در استوا</span><b>≈ 12 ساعت</b></div>
+      <div><span>طول روز در عرض انتخابی</span><b id="dayLength">12:00</b></div>
+    </div>
+  </section>
+
+  <section class="card mode-card">
+    <div class="mode-row">
+      <button id="liveBtn">واقعی</button>
+      <button id="simBtn" class="active">شبیه‌سازی</button>
+    </div>
+    <div class="sim-controls">
+      <button id="dayBack">− روز</button>
+      <button id="play" class="play">▶</button>
+      <button id="dayForward">+ روز</button>
+      <span id="speed">۱ روز / ۲ ثانیه</span>
+    </div>
+    <div class="sim-date" id="simDate">۲۱ مارس</div>
+  </section>
+
+  <section class="visual-legend">
+    <span><i class="sun"></i>خورشید</span>
+    <span><i class="day"></i>نیمه روشن</span>
+    <span><i class="night"></i>نیمه تاریک</span>
+    <span><i class="axis"></i>محور زمین</span>
+    <span><i class="zone"></i>قاچ ۱۵°</span>
+  </section>
+</div>
+
+<div id="labels">
+  <div class="world-label sun-label">خورشید</div>
+  <div class="world-label day-label">روز</div>
+  <div class="world-label night-label">شب</div>
+  <div class="world-label axis-label">محور چرخش<br><b>۲۳٫۴۴°</b></div>
+  <div class="world-label orbit-label">مدار انتقالی</div>
+</div>
+
 <script type="module" src="app.js"></script>
 </body>
 </html>
