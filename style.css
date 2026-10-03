@@ -30,3 +30,9 @@ input[type=range]{width:100%;accent-color:#5bd7ff}
 .hint{position:fixed;bottom:22px;right:24px;z-index:5;color:rgba(180,205,225,.46);font-size:9px}
 @media(max-width:800px){.panel{width:220px;top:70px;padding:12px}.panel.left{left:8px}.panel.right{right:8px}.hint{display:none}.bottom{bottom:10px}.topbar{padding:0 12px}}
 @media(max-width:580px){.panel{width:185px}.panel.right{top:auto;bottom:72px}.panel.left{top:64px}.season-btn{font-size:9px}.season-btn b{display:none}.clock-big{font-size:23px}}
+
+/* interaction layer */
+.panel, .topbar, .bottom { pointer-events:auto; }
+.panel button, .bottom button, .panel input { position:relative; z-index:20; }
+button { -webkit-tap-highlight-color:transparent; }
+.season-btn:active, .mode:active, .speed-control button:active { transform:scale(.97); }
