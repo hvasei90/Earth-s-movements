@@ -302,31 +302,94 @@ function animate(){
 animate();
 
 $("longitude").addEventListener("input",e=>{longitude=Number(e.target.value);updateReadouts()});
-document.querySelectorAll(".mode").forEach(b=>b.addEventListener("click",()=>{
-  document.querySelectorAll(".mode").forEach(x=>x.classList.remove("active"));
-  b.classList.add("active");mode=b.dataset.mode;
-  if(mode==="live") syncLive();
-}));
-document.querySelectorAll(".season-btn").forEach(b=>b.addEventListener("click",()=>{
-  document.querySelectorAll(".season-btn").forEach(x=>x.classList.remove("active"));
-  b.classList.add("active");
-  simDay=seasons[b.dataset.season].day;
+// ---------- Robust UI controls ----------
+function setMode(newMode){
+  mode=newMode;
+  document.querySelectorAll(".mode").forEach(x=>{
+    x.classList.toggle("active", x.dataset.mode===newMode);
+  });
+  if(newMode==="live"){
+    syncLive();
+    running=true;
+    $("play").textContent="❚❚";
+  }
+  updateReadouts();
+}
+
+function setSeason(key){
+  const item=seasons[key];
+  if(!item) return;
   mode="sim";
-  document.querySelectorAll(".mode").forEach(x=>x.classList.toggle("active",x.dataset.mode==="sim"));
+  document.querySelectorAll(".mode").forEach(x=>{
+    x.classList.toggle("active", x.dataset.mode==="sim");
+  });
+  document.querySelectorAll(".season-btn").forEach(x=>{
+    x.classList.toggle("active", x.dataset.season===key);
+  });
+  simDay=item.day;
   running=false;
-}));
-$("play").addEventListener("click",()=>{
-  running=!running;
-  $("play").textContent=running?"❚❚":"▶";
+  $("play").textContent="▶";
+  updateEarth(simDay);
+  updateReadouts();
+}
+
+// Event delegation means controls keep working even after UI updates.
+document.addEventListener("click",(e)=>{
+  const modeButton=e.target.closest(".mode");
+  if(modeButton){
+    setMode(modeButton.dataset.mode);
+    return;
+  }
+
+  const seasonButton=e.target.closest(".season-btn");
+  if(seasonButton){
+    setSeason(seasonButton.dataset.season);
+    return;
+  }
+
+  if(e.target.closest("#play")){
+    running=!running;
+    $("play").textContent=running?"❚❚":"▶";
+    return;
+  }
+
+  if(e.target.closest("#forward")){
+    simSpeed=Math.min(simSpeed*2,32);
+    $("speedText").textContent=`${simSpeed} روز / 4 ثانیه`;
+    return;
+  }
+
+  if(e.target.closest("#reverse")){
+    simSpeed=Math.max(simSpeed/2,.25);
+    $("speedText").textContent=`${simSpeed} روز / 4 ثانیه`;
+    return;
+  }
 });
-$("forward").addEventListener("click",()=>{
-  simSpeed=Math.min(simSpeed*2,32);
-  $("speedText").textContent=`${simSpeed} روز / 4 ثانیه`;
+
+$("longitude").addEventListener("input",e=>{
+  longitude=Number(e.target.value);
+  updateReadouts();
 });
-$("reverse").addEventListener("click",()=>{
-  simSpeed=Math.max(simSpeed/2,.25);
-  $("speedText").textContent=`${simSpeed} روز / 4 ثانیه`;
+
+// Keyboard shortcuts
+window.addEventListener("keydown",e=>{
+  if(e.code==="Space"){
+    e.preventDefault();
+    running=!running;
+    $("play").textContent=running?"❚❚":"▶";
+  }
+  if(e.key==="ArrowRight"){
+    simDay=(simDay+1)%365.2422;
+    mode="sim";
+    updateEarth(simDay); updateReadouts();
+  }
+  if(e.key==="ArrowLeft"){
+    simDay=(simDay-1+365.2422)%365.2422;
+    mode="sim";
+    updateEarth(simDay); updateReadouts();
+  }
 });
+
 
 addEventListener("resize",()=>{
   camera.aspect=innerWidth/innerHeight;
@@ -335,3 +398,5 @@ addEventListener("resize",()=>{
 });
 
 canvas.addEventListener("pointerdown",()=>{$("hint").style.opacity=".15"},{once:true});
+
+setSeason('march');
