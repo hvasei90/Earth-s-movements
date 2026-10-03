@@ -36,17 +36,17 @@ for(let i=0;i<4500;i++){
 sg.setAttribute("position",new THREE.BufferAttribute(sp,3));
 scene.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0xbddcff,size:.5,transparent:true,opacity:.72})));
 
-const sun=new THREE.Mesh(new THREE.SphereGeometry(.75,40,40),new THREE.MeshBasicMaterial({color:0xffd26a}));
-sun.position.set(-8.6,2.0,0);
+const sun=new THREE.Mesh(new THREE.SphereGeometry(.82,40,40),new THREE.MeshBasicMaterial({color:0xffd26a}));
+sun.position.set(0,0,0);
 scene.add(sun);
 const sunGlow=new THREE.Mesh(new THREE.SphereGeometry(1.15,32,32),new THREE.MeshBasicMaterial({color:0xffa51e,transparent:true,opacity:.10,blending:THREE.AdditiveBlending,depthWrite:false}));
 sun.add(sunGlow);
-const light=new THREE.PointLight(0xfff3d0,190,100,1.35);
+const light=new THREE.PointLight(0xfff3d0,230,120,1.35);
 light.position.copy(sun.position);
 scene.add(light);
 
 /* orbit */
-const ORBIT=6.9;
+const ORBIT=7.7;
 const orbitPts=[];
 for(let i=0;i<=720;i++){const a=i/720*Math.PI*2;orbitPts.push(new THREE.Vector3(Math.cos(a)*ORBIT,0,Math.sin(a)*ORBIT))}
 const orbit=new THREE.Line(new THREE.BufferGeometry().setFromPoints(orbitPts),new THREE.LineBasicMaterial({color:0x37627d,transparent:true,opacity:.6}));
@@ -126,9 +126,24 @@ for(let i=-2;i<=2;i++){
  rayGroup.add(line);
 }
 
+/* Direct solar-incidence marker: equator at equinoxes, Tropic of Cancer/Capricorn at solstices. */
+const targetGroup=new THREE.Group();scene.add(targetGroup);
+const targetRing=new THREE.Mesh(
+  new THREE.RingGeometry(.18,.27,48),
+  new THREE.MeshBasicMaterial({color:0xffd15c,transparent:true,opacity:.95,side:THREE.DoubleSide})
+);
+targetGroup.add(targetRing);
+const targetLine=new THREE.Line(
+  new THREE.BufferGeometry(),
+  new THREE.LineBasicMaterial({color:0xffd15c,transparent:true,opacity:.7})
+);
+targetGroup.add(targetLine);
+const targetPoint=new THREE.Mesh(new THREE.SphereGeometry(.055,12,12),new THREE.MeshBasicMaterial({color:0xffe27c}));
+targetGroup.add(targetPoint);
+
 /* state */
 const seasons={march:{day:80,name:"اعتدال بهاری"},june:{day:172,name:"انقلاب تابستانی"},september:{day:266,name:"اعتدال پاییزی"},december:{day:355,name:"انقلاب زمستانی"}};
-let simDay=80,mode="sim",playing=true,speed=1;
+let simDay=80,playing=true,speed=1;
 let lon=51.4,lat=35.7,locationName="تهران";
 
 const cities={تهران:[51.4,35.7],گرینویچ:[0,51.5],کوالالامپور:[101.7,3.1],مکزیکوسیتی:[-99.1,19.4]};
@@ -153,11 +168,11 @@ function dateName(day){
  return `${farsiNumber(d)} ${names[m]}`;
 }
 function zoneInfo(longitude){
- // 15-degree standard zones; central meridian is an exact multiple of 15.
+ // Standard 15° time-zone model. For Tehran, keep Iran's official UTC+3:30.
+ if(locationName==="تهران") return {z:3.5,center:52.5,label:"+3:30"};
  let z=Math.round(longitude/15);
  let center=z*15;
- let hours=z;
- let label=hours>=0?`+${hours}`:`${hours}`;
+ let label=z>=0?`+${z}`:`${z}`;
  return {z,center,label};
 }
 function longitudeText(v){
@@ -167,16 +182,46 @@ function shortestDiff(a,b){
  let d=(a-b+12)%24-12;
  return d;
 }
+
+function seasonData(day){
+  const near=(a,b)=>{const d=Math.abs(day-a);return Math.min(d,365.2422-d)};
+  if(near(80)<2) return {targetLat:0,targetText:"استوا",shortText:"استوا",explain:"اعتدال بهاری: خورشید عمود بر استوا می‌تابد و طول روز و شب تقریباً برابر است."};
+  if(near(172)<2) return {targetLat:23.44,targetText:"مدار رأس‌السرطان ۲۳٫۴۴° شمالی",shortText:"رأس‌السرطان",explain:"انقلاب تابستانی: تابش عمودی خورشید روی مدار رأس‌السرطان است؛ در نیمکرهٔ شمالی روزها بلندتر می‌شوند."};
+  if(near(266)<2) return {targetLat:0,targetText:"استوا",shortText:"استوا",explain:"اعتدال پاییزی: خورشید عمود بر استوا می‌تابد و طول روز و شب تقریباً برابر است."};
+  if(near(355)<2) return {targetLat:-23.44,targetText:"مدار رأس‌الجدی ۲۳٫۴۴° جنوبی",shortText:"رأس‌الجدی",explain:"انقلاب زمستانی: تابش عمودی خورشید روی مدار رأس‌الجدی است؛ در نیمکرهٔ شمالی روزها کوتاه‌تر می‌شوند."};
+  // Interpolate the subsolar latitude between the four key dates.
+  return {targetLat:solarDeclination(day),targetText:`عرض ${Math.abs(solarDeclination(day)).toFixed(1)}° ${solarDeclination(day)>=0?"شمالی":"جنوبی"}`,shortText:"نقطه تابش",explain:"با حرکت زمین در مدار، نقطهٔ تابش عمودی خورشید بین دو مدار رأس‌السرطان و رأس‌الجدی جابه‌جا می‌شود."};
+}
+function updateSolarTarget(){
+  const sd=seasonData(simDay);
+  const latR=THREE.MathUtils.degToRad(sd.targetLat);
+  const earthPos=earthSystem.position.clone();
+  // Subsolar direction: from Earth toward the Sun. Build a local sphere point whose
+  // latitude is the declination and longitude faces the Sun.
+  const toSun=sun.position.clone().sub(earthPos).normalize();
+  const lonA=Math.atan2(toSun.x,toSun.z);
+  const r=2.78;
+  const local=new THREE.Vector3(r*Math.cos(latR)*Math.sin(lonA),r*Math.sin(latR),r*Math.cos(latR)*Math.cos(lonA));
+  // The surface point must rotate with the Earth during the 24-hour rotation.
+  local.applyEuler(earth.rotation);
+  const world=local.clone();earthSystem.localToWorld(world);
+  targetRing.position.copy(world);
+  targetRing.quaternion.copy(camera.quaternion);
+  targetPoint.position.copy(world);
+  targetLine.geometry.setFromPoints([sun.position.clone(),world]);
+  targetLine.geometry.attributes.position.needsUpdate=true;
+  $("solarTarget").textContent=sd.shortText;
+  $("seasonExplain").textContent=sd.explain;
+  $("solarTargetLabel").textContent=`تابش عمودی: ${sd.targetText}`;
+  const p=world.clone().project(camera);
+  const el=$("solarTargetLabel");
+  el.style.left=`${(p.x*.5+.5)*innerWidth}px`;
+  el.style.top=`${(-p.y*.5+.5)*innerHeight}px`;
+}
 function updateTime(){
  let dec=solarDeclination(simDay), et=eqTime(simDay);
  let solarH, officialH;
- if(mode==="live"){
-   const now=new Date(),utc=now.getUTCHours()+now.getUTCMinutes()/60+now.getUTCSeconds()/3600;
-   solarH=(utc+lon/15+et/60+24)%24;
- }else{
-   // simDay fractional part is the apparent solar rotation phase.
-   solarH=((simDay%1)*24+lon/15+24)%24;
- }
+ solarH=((simDay%1)*24+lon/15+et/60+24)%24;
  const zi=zoneInfo(lon);
  officialH=(solarH+(zi.center-lon)/15+24)%24;
 
@@ -234,20 +279,17 @@ function syncLive(){
  const n=new Date(),start=new Date(n.getFullYear(),0,1);
  simDay=(n-start)/86400000+1;
 }
-function setMode(m){
- mode=m;
- $("liveBtn").classList.toggle("active",m==="live");
- $("simBtn").classList.toggle("active",m==="sim");
- if(m==="live"){syncLive();playing=false;$("play").textContent="▶";}
- else {playing=true;$("play").textContent="❚❚";}
- updateEarth();updateTime();
-}
 function setSeason(k){
- simDay=seasons[k].day;mode="sim";playing=false;
- $("liveBtn").classList.remove("active");$("simBtn").classList.add("active");
+ simDay=seasons[k].day;playing=false;
  document.querySelectorAll(".season").forEach(b=>b.classList.toggle("active",b.dataset.season===k));
  $("play").textContent="▶";
- updateEarth();updateTime();
+ updateEarth();updateTime();updateSolarTarget();
+}
+function setSpeed(v){
+ speed=Number(v);
+ $("speedRange").value=speed;
+ const txt=speed===1?"۱ روز / ۲ ثانیه":`${farsiNumber(speed)} روز / ۲ ثانیه`;
+ $("speedValue").textContent=txt;
 }
 
 $("longitude").addEventListener("input",e=>{lon=Number(e.target.value);locationName="موقعیت انتخاب‌شده";lat=35.7;updateSelectedMeridian(lon);updateTime();});
@@ -256,19 +298,18 @@ document.querySelectorAll(".city-buttons button").forEach(b=>b.addEventListener(
  $("longitude").value=lon;updateSelectedMeridian(lon);updateTime();
 }));
 document.querySelectorAll(".season").forEach(b=>b.addEventListener("click",()=>setSeason(b.dataset.season)));
-$("liveBtn").addEventListener("click",()=>setMode("live"));
-$("simBtn").addEventListener("click",()=>setMode("sim"));
 $("play").addEventListener("click",()=>{playing=!playing;$("play").textContent=playing?"❚❚":"▶";});
-$("dayForward").addEventListener("click",()=>{simDay=(simDay+1)%365.2422;mode="sim";updateEarth();updateTime();});
-$("dayBack").addEventListener("click",()=>{simDay=(simDay-1+365.2422)%365.2422;mode="sim";updateEarth();updateTime();});
+$("dayForward").addEventListener("click",()=>{simDay=(simDay+1)%365.2422;updateEarth();updateTime();updateSolarTarget();});
+$("dayBack").addEventListener("click",()=>{simDay=(simDay-1+365.2422)%365.2422;updateEarth();updateTime();updateSolarTarget();});
+$("speedRange").addEventListener("input",e=>setSpeed(e.target.value));
+document.querySelectorAll(".speed-presets button").forEach(b=>b.addEventListener("click",()=>setSpeed(b.dataset.speed)));
 
 let last=performance.now();
 function animate(now){
  requestAnimationFrame(animate);
  const dt=(now-last)/1000;last=now;
- if(mode==="live")syncLive();
- else if(playing)simDay=(simDay+dt*(speed/2))%365.2422;
- updateEarth();updateTime();
+ if(playing)simDay=(simDay+dt*(speed/2))%365.2422;
+ updateEarth();updateTime();updateSolarTarget();
  projectLabels();
  controls.update();renderer.render(scene,camera);
 }
