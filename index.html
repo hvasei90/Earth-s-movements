@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Earth 3D</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <canvas id="scene"></canvas>
+
+    <header class="topbar">
+      <div class="brand">EARTH <span>3D</span></div>
+      <div class="season-pill" id="seasonPill">اعتدال بهاری</div>
+    </header>
+
+    <aside class="panel left">
+      <div class="panel-title">زمان</div>
+      <div class="clock-big" id="clock">12:00:00</div>
+      <div class="date-row">
+        <span id="dateText">21 مارس</span>
+        <span id="dayOfYear">روز 80</span>
+      </div>
+
+      <div class="time-box">
+        <div class="time-label">زمان واقعی خورشیدی</div>
+        <div class="time-value" id="solarTime">12:00</div>
+      </div>
+      <div class="time-box">
+        <div class="time-label">زمان رسمی</div>
+        <div class="time-value" id="zoneTime">12:00</div>
+      </div>
+
+      <div class="location-row">
+        <span>طول جغرافیایی</span>
+        <strong id="longitudeValue">0°</strong>
+      </div>
+      <input id="longitude" type="range" min="-180" max="180" value="0" step="1">
+
+      <div class="toggle-row">
+        <button class="mode active" data-mode="live">واقعی</button>
+        <button class="mode" data-mode="sim">شبیه‌سازی</button>
+      </div>
+    </aside>
+
+    <aside class="panel right">
+      <div class="panel-title">فصل‌ها</div>
+      <div class="season-list">
+        <button data-season="march" class="season-btn active">
+          <span class="dot spring"></span><span>اعتدال بهاری</span><b>20/21 مارس</b>
+        </button>
+        <button data-season="june" class="season-btn">
+          <span class="dot summer"></span><span>انقلاب تابستانی</span><b>20/21 ژوئن</b>
+        </button>
+        <button data-season="september" class="season-btn">
+          <span class="dot autumn"></span><span>اعتدال پاییزی</span><b>22/23 سپتامبر</b>
+        </button>
+        <button data-season="december" class="season-btn">
+          <span class="dot winter"></span><span>انقلاب زمستانی</span><b>21/22 دسامبر</b>
+        </button>
+      </div>
+
+      <div class="orbit-readout">
+        <div><span>میل خورشیدی</span><strong id="declination">0.00°</strong></div>
+        <div><span>زاویه محور</span><strong>23.44°</strong></div>
+      </div>
+    </aside>
+
+    <div class="bottom">
+      <div class="speed-control">
+        <button id="reverse">−</button>
+        <button id="play" class="play">▶</button>
+        <button id="forward">+</button>
+        <span id="speedText">1 روز / 4 ثانیه</span>
+      </div>
+      <div class="legend">
+        <span><i class="day"></i>روز</span>
+        <span><i class="night"></i>شب</span>
+        <span><i class="axis"></i>محور</span>
+        <span><i class="zone"></i>قاچ ۱۵°</span>
+      </div>
+    </div>
+
+    <div class="hint" id="hint">برای چرخاندن کره، بکشید • برای زوم، اسکرول کنید</div>
+  </div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
