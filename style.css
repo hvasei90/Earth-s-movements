@@ -1,38 +1,31 @@
 @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap');
-
+:root{font-family:Vazirmatn,Arial,sans-serif;color:#eaf5ff;background:#02060d}
 *{box-sizing:border-box}
-html,body,#app{margin:0;width:100%;height:100%;overflow:hidden}
-body{background:#02050c;color:#eef5ff;font-family:Vazirmatn,Arial,sans-serif}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#02060d}
+body{direction:rtl}
 #scene{position:fixed;inset:0;width:100%;height:100%;display:block}
-.topbar{position:fixed;top:0;left:0;right:0;height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:5;pointer-events:none;background:linear-gradient(180deg,rgba(2,5,12,.78),transparent)}
-.brand{font-weight:800;letter-spacing:3px;font-size:17px;color:#fff}.brand span{color:#5bd7ff}
-.season-pill{font-size:13px;padding:8px 14px;border:1px solid rgba(255,255,255,.16);border-radius:999px;background:rgba(5,11,22,.62);backdrop-filter:blur(10px)}
-.panel{position:fixed;z-index:6;top:88px;width:270px;border:1px solid rgba(150,190,230,.16);background:rgba(5,11,22,.68);backdrop-filter:blur(18px);border-radius:18px;box-shadow:0 18px 50px rgba(0,0,0,.25);padding:18px}
-.panel.left{left:20px}.panel.right{right:20px}
-.panel-title{font-size:12px;color:#7f9bb7;margin-bottom:10px;letter-spacing:.5px}
-.clock-big{font-size:30px;font-weight:700;letter-spacing:1px;direction:ltr;text-align:left}
-.date-row{display:flex;justify-content:space-between;color:#9db2c8;font-size:11px;margin:3px 0 16px}
-.time-box{padding:10px 11px;margin:7px 0;border-radius:11px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.06)}
-.time-label{font-size:10px;color:#8299b0}.time-value{font-size:20px;margin-top:2px;direction:ltr;text-align:left;font-weight:600}
-.location-row{display:flex;justify-content:space-between;font-size:11px;color:#94aac0;margin:17px 0 7px}.location-row strong{color:#fff;direction:ltr}
-input[type=range]{width:100%;accent-color:#5bd7ff}
-.toggle-row{display:flex;gap:6px;margin-top:14px}
-.mode,.season-btn,.speed-control button{font-family:inherit}
-.mode{flex:1;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#94aac0;border-radius:9px;padding:7px;cursor:pointer}.mode.active{background:#15364b;color:#dff7ff;border-color:#276d8c}
-.season-list{display:flex;flex-direction:column;gap:6px}
-.season-btn{display:grid;grid-template-columns:13px 1fr auto;align-items:center;gap:7px;border:1px solid transparent;background:rgba(255,255,255,.035);color:#dce7f1;border-radius:10px;padding:9px 8px;cursor:pointer;text-align:right;font-size:11px}.season-btn:hover{background:rgba(255,255,255,.07)}.season-btn.active{border-color:rgba(91,215,255,.34);background:rgba(48,132,167,.16)}.season-btn b{font-size:9px;color:#758ca3;font-weight:500;direction:ltr}
-.dot{width:8px;height:8px;border-radius:50%;display:block}.spring{background:#66d69b}.summer{background:#ffc35c}.autumn{background:#ef9367}.winter{background:#76bfff}
-.orbit-readout{border-top:1px solid rgba(255,255,255,.08);margin-top:14px;padding-top:12px;display:grid;gap:7px}.orbit-readout div{display:flex;justify-content:space-between;font-size:10px;color:#8299b0}.orbit-readout strong{font-size:12px;color:#eef5ff;direction:ltr}
-.bottom{position:fixed;z-index:6;bottom:18px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:9px}
-.speed-control{display:flex;align-items:center;gap:5px;background:rgba(5,11,22,.72);border:1px solid rgba(150,190,230,.15);backdrop-filter:blur(16px);border-radius:999px;padding:5px}
-.speed-control button{width:34px;height:30px;border:0;border-radius:50%;background:rgba(255,255,255,.06);color:#cfe6f7;cursor:pointer;font-size:17px}.speed-control .play{background:#174b62;color:#fff}.speed-control span{font-size:10px;color:#8ca5bb;min-width:105px;text-align:center}
-.legend{display:flex;gap:14px;font-size:9px;color:#8299b0;background:rgba(5,11,22,.5);padding:5px 9px;border-radius:10px}.legend span{display:flex;align-items:center;gap:4px}.legend i{display:block;width:7px;height:7px;border-radius:50%}.legend .day{background:#dbefff}.legend .night{background:#1c2940}.legend .axis{background:#ff7777}.legend .zone{background:#5bd7ff}
-.hint{position:fixed;bottom:22px;right:24px;z-index:5;color:rgba(180,205,225,.46);font-size:9px}
-@media(max-width:800px){.panel{width:220px;top:70px;padding:12px}.panel.left{left:8px}.panel.right{right:8px}.hint{display:none}.bottom{bottom:10px}.topbar{padding:0 12px}}
-@media(max-width:580px){.panel{width:185px}.panel.right{top:auto;bottom:72px}.panel.left{top:64px}.season-btn{font-size:9px}.season-btn b{display:none}.clock-big{font-size:23px}}
-
-/* interaction layer */
-.panel, .topbar, .bottom { pointer-events:auto; }
-.panel button, .bottom button, .panel input { position:relative; z-index:20; }
-button { -webkit-tap-highlight-color:transparent; }
-.season-btn:active, .mode:active, .speed-control button:active { transform:scale(.97); }
+#ui{position:fixed;inset:0;pointer-events:none}
+.top{height:64px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;pointer-events:none}
+.logo{font-size:16px;letter-spacing:3px;font-weight:800}.logo b{color:#55d9ff}
+.scene-title{font-size:13px;padding:7px 13px;border:1px solid #294052;border-radius:999px;background:rgba(2,8,17,.7);backdrop-filter:blur(10px)}
+.card{position:absolute;pointer-events:auto;background:rgba(4,12,23,.86);border:1px solid rgba(130,180,220,.20);box-shadow:0 18px 55px rgba(0,0,0,.30);backdrop-filter:blur(18px);border-radius:16px}
+.time-card{left:18px;top:80px;width:330px;padding:17px}
+.eyebrow,.card-title{font-size:10px;color:#7592ab}
+.location-name{font-size:21px;font-weight:700;margin-top:3px}.coords{display:flex;gap:12px;color:#6f8aa2;font-size:10px;direction:ltr;justify-content:flex-end}
+.clocks{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:13px}
+.clock{padding:11px;border-radius:12px;background:#0a1422;border:1px solid rgba(255,255,255,.07);direction:rtl}
+.clock.real{border-color:rgba(82,211,255,.25)}.clock.official{border-color:rgba(255,190,80,.24)}
+.clock-head{display:flex;justify-content:space-between;align-items:center;color:#7f9bb2;font-size:9px}.clock-head i{width:6px;height:6px;border-radius:50%;background:#51d8ff}.official .clock-head i{background:#ffc05b}
+.clock strong{display:block;font-size:23px;direction:ltr;text-align:center;margin:7px 0 1px;letter-spacing:1px}.clock small{display:block;text-align:center;color:#6f879d;font-size:8px}
+.difference{display:flex;justify-content:space-between;align-items:center;margin-top:7px;padding:9px 10px;background:#07101c;border-radius:9px;font-size:9px;color:#7891a8}.difference b{font-size:13px;direction:ltr;color:#55d9ff}
+.sun-times{display:grid;grid-template-columns:1fr 1fr 1fr;margin-top:9px;gap:4px}.sun-times div{background:rgba(255,255,255,.035);border-radius:8px;padding:7px 5px;text-align:center}.sun-times span{display:block;color:#7089a0;font-size:8px}.sun-times b{display:block;margin-top:3px;font-size:11px;direction:ltr}
+.location-card{left:18px;bottom:116px;width:330px;padding:15px}.longitude-scale{display:flex;justify-content:space-between;align-items:end;margin:6px 0 9px}.lon-value{font-size:20px;font-weight:700;direction:ltr}.zone-value{font-size:9px;color:#7892a8}.zone-value b{color:#f2f7fb;font-size:12px;direction:ltr}
+input[type=range]{width:100%;accent-color:#55d9ff;cursor:pointer}.scale-labels{display:flex;justify-content:space-between;color:#5f778d;font-size:8px;direction:ltr;margin-top:2px}
+.city-buttons{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:9px}.city-buttons button,.mode-row button,.season,.sim-controls button{font:inherit;cursor:pointer;color:#a9bfd2;background:#0b1522;border:1px solid rgba(255,255,255,.08);border-radius:8px}.city-buttons button{font-size:9px;padding:6px}.city-buttons button:hover{border-color:#3f8ca8;color:#fff}
+.season-card{right:18px;top:80px;width:315px;padding:16px}.season-grid{display:grid;gap:6px;margin-top:8px}.season{display:flex;justify-content:space-between;align-items:center;padding:9px 10px;text-align:right;font-size:10px}.season b{font-size:8px;color:#607a91;font-weight:400}.season.active{border-color:#3b9cbe;background:#0b2231;color:#fff;box-shadow:inset 3px 0 #55d9ff}
+.season-readout{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:10px;border-top:1px solid rgba(255,255,255,.08);padding-top:10px}.season-readout div{background:#08121e;border-radius:8px;padding:7px;text-align:center}.season-readout span{display:block;font-size:7px;color:#668098}.season-readout b{display:block;font-size:10px;margin-top:2px;direction:ltr}
+.mode-card{right:18px;bottom:116px;width:315px;padding:12px}.mode-row{display:grid;grid-template-columns:1fr 1fr;gap:5px}.mode-row button{padding:7px;font-size:10px}.mode-row button.active{background:#12405a;border-color:#3a91b3;color:#fff}.sim-controls{display:flex;align-items:center;gap:5px;margin-top:7px}.sim-controls button{padding:6px 8px;font-size:9px}.sim-controls .play{width:35px;height:32px;border-radius:50%;padding:0;background:#126080;color:#fff;font-size:13px}.sim-controls span{font-size:8px;color:#657e94;margin-right:auto}.sim-date{text-align:center;color:#8ba3b8;font-size:9px;margin-top:7px}
+.visual-legend{position:absolute;left:50%;bottom:17px;transform:translateX(-50%);display:flex;gap:12px;align-items:center;padding:7px 11px;border-radius:10px;background:rgba(3,9,17,.72);border:1px solid rgba(120,170,205,.13);font-size:8px;color:#7891a6;pointer-events:none}.visual-legend span{display:flex;align-items:center;gap:4px;white-space:nowrap}.visual-legend i{width:7px;height:7px;border-radius:50%;display:inline-block}.sun{background:#ffc15a}.day{background:#d9efff}.night{background:#182a42}.axis{background:#ff6767}.zone{background:#55d9ff}
+.world-label{position:fixed;z-index:3;color:#c9eaff;font-size:10px;pointer-events:none;text-shadow:0 1px 5px #000;opacity:.9;transform:translate(-50%,-50%);white-space:nowrap}.sun-label{font-weight:700;color:#ffd878}.axis-label{color:#ffaaa4;text-align:center}.orbit-label{color:#6f9ab3}
+@media(max-width:900px){.time-card,.location-card{left:10px;width:270px}.season-card,.mode-card{right:10px;width:270px}.time-card{top:72px}.season-card{top:72px}.location-card,.mode-card{bottom:92px}}
+@media(max-width:680px){.time-card{width:calc(50% - 15px)}.season-card{width:calc(50% - 15px)}.location-card{width:calc(50% - 15px)}.mode-card{width:calc(50% - 15px)}.clocks{grid-template-columns:1fr}.season-readout{grid-template-columns:1fr 1fr}.city-buttons{display:none}.visual-legend{display:none}}
