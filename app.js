@@ -2,7 +2,17 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.m
 import {OrbitControls} from "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/controls/OrbitControls.js";
 
 const canvas=document.getElementById("scene");
-const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});
+let renderer;
+try {
+  renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});
+} catch(err) {
+  console.error(err);
+  const msg=document.createElement("div");
+  msg.style.cssText="position:fixed;inset:0;display:grid;place-items:center;color:#fff;font:16px sans-serif;background:#02050c;z-index:9999";
+  msg.textContent="WebGL در این مرورگر فعال نیست.";
+  document.body.appendChild(msg);
+  throw err;
+}
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 renderer.setSize(innerWidth,innerHeight);
 renderer.outputColorSpace=THREE.SRGBColorSpace;
