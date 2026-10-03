@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>زمین | آزمایشگاه تعاملی</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap');
+:root{--bg:#050b18;--panel:rgba(13,24,45,.82);--line:rgba(155,190,255,.16);--txt:#edf4ff;--muted:#8da4c7;--cyan:#54d9ff;--gold:#ffc66d}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 45%,#102347 0,#071326 43%,#030711 100%);color:var(--txt);font-family:Vazirmatn,sans-serif;overflow:hidden}
+#app{height:100dvh;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px;padding:14px}
+#view{position:relative;min-width:0;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:radial-gradient(ellipse at 50% 48%,rgba(24,58,106,.38),transparent 60%),rgba(4,10,22,.45)}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+.top{position:absolute;top:16px;left:18px;right:18px;display:flex;justify-content:space-between;align-items:center;pointer-events:none}
+.brand{font-size:14px;color:#d8e8ff;font-weight:700;letter-spacing:.2px}.live{font-size:11px;color:#a9bddb;border:1px solid var(--line);background:#08152bd9;border-radius:30px;padding:7px 11px}
+#hud{position:absolute;bottom:16px;left:16px;display:flex;gap:8px;flex-wrap:wrap;max-width:75%}
+.pill{background:#07152be8;border:1px solid var(--line);border-radius:12px;padding:8px 11px;font-size:12px;color:#c9d9f2;backdrop-filter:blur(12px)}.pill b{color:white;font-variant-numeric:tabular-nums}
+#side{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:17px;display:flex;flex-direction:column;gap:13px;overflow:auto;backdrop-filter:blur(18px)}
+h1{font-size:19px;margin:0;font-weight:800}h2{font-size:12px;color:#a8bddf;margin:0 0 9px;font-weight:600;letter-spacing:.2px}
+.section{border-bottom:1px solid var(--line);padding-bottom:13px}.section:last-child{border:0;padding-bottom:0}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:7px 0}.value{font-size:12px;color:#dce9ff;font-variant-numeric:tabular-nums}
+button,select{font:inherit;color:var(--txt);background:#142744;border:1px solid #2b456a;border-radius:10px;padding:8px 10px;cursor:pointer}button:hover{border-color:#62cfff;background:#193454}button.active{background:#17476a;border-color:#51c9ff;color:#fff}
+.btns{display:flex;gap:6px;flex-wrap:wrap}.btns button{flex:1;min-width:54px;font-size:12px}
+input[type=range]{width:100%;accent-color:#50d5ff;cursor:pointer}
+select{width:100%;font-size:12px}.toggle{display:flex;align-items:center;gap:8px;font-size:12px;color:#c8d8f0}.toggle input{accent-color:#50d5ff}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:#a8bddf}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:5px}
+.seasons{display:grid;grid-template-columns:1fr 1fr;gap:6px}.seasons button{font-size:11px;text-align:center;padding:9px 4px}
+.small{font-size:11px;color:var(--muted)}#tooltip{position:absolute;display:none;pointer-events:none;background:#061329ed;border:1px solid #5ca9d9;border-radius:9px;padding:6px 9px;font-size:11px;z-index:4}
+@media(max-width:800px){body{overflow:auto}#app{height:auto;min-height:100dvh;grid-template-columns:1fr;padding:8px}#view{height:58vh;min-height:360px}#side{overflow:visible}#hud{max-width:95%;bottom:9px;left:9px}.pill{font-size:10px;padding:6px 8px}}
+</style>
+</head>
+<body><div id="app">
+<div id="view"><div class="top"><div class="brand">EARTH / 3D</div><div class="live" id="modeTag">مدل خورشیدمرکزی</div></div><div id="tooltip"></div><div id="hud"><div class="pill">زمان شبیه‌سازی: <b id="clock">12:00</b></div><div class="pill">طول جغرافیایی: <b id="lon">۰°</b></div><div class="pill">فصل نیمکره شمالی: <b id="seasonNow">—</b></div></div></div>
+<aside id="side">
+<div><h1>آزمایشگاه زمین</h1><div class="small">کنترل‌های تعاملی</div></div>
+<div class="section"><h2>حرکت و زمان</h2><div class="btns"><button id="play" class="active">Ⅱ مکث</button><button id="step">یک گام</button><button id="reset">بازنشانی</button></div><div class="row"><label class="small">سرعت شبیه‌سازی</label><span class="value" id="speedVal">۱×</span></div><input id="speed" type="range" min="0" max="100" value="35"><div class="row"><label class="small">زمان روز</label><span class="value" id="dayVal">۱۲:۰۰</span></div><input id="day" type="range" min="0" max="1439" value="720"></div>
+<div class="section"><h2>نمایش</h2><label class="toggle"><input id="zones" type="checkbox" checked> قاچ‌های ۱۵ درجه‌ای و نصف‌النهارها</label><label class="toggle"><input id="equator" type="checkbox" checked> استوا و مدارهای رأس‌السرطان/جدی</label><label class="toggle"><input id="axis" type="checkbox" checked> محور مایل و قطب‌ها</label><label class="toggle"><input id="sunlight" type="checkbox" checked> مرز روز و شب</label><label class="toggle"><input id="labels" type="checkbox" checked> برچسب رویدادها</label></div>
+<div class="section"><h2>حرکت انتقالی و فصل‌ها</h2><div class="row"><label class="small">جایگاه زمین در مدار</label><span class="value" id="orbitVal">اعتدال بهاری</span></div><input id="orbit" type="range" min="0" max="359" value="0"><div class="seasons"><button data-season="0">اعتدال بهاری</button><button data-season="90">انقلاب تابستانی</button><button data-season="180">اعتدال پاییزی</button><button data-season="270">انقلاب زمستانی</button></div><div class="legend"><span><i class="dot" style="background:#58d7ff"></i>نیمکره شمالی</span><span><i class="dot" style="background:#ffbd67"></i>نیمکره جنوبی</span></div></div>
+<div class="section"><h2>اختلاف زمانی</h2><select id="city"><option value="0">گرینویچ · UTC±۰</option><option value="3.5">تهران · UTC+۳:۳۰</option><option value="9">توکیو · UTC+۹</option><option value="-5">نیویورک · UTC−۵</option><option value="1">پاریس · UTC+۱</option><option value="5.5">دهلی · UTC+۵:۳۰</option><option value="8">پکن · UTC+۸</option></select><div class="row"><span class="small">زمان خورشیدی محلی</span><b class="value" id="solarTime">۱۲:۰۰</b></div><div class="row"><span class="small">زمان رسمی نمونه</span><b class="value" id="officialTime">۱۲:۰۰</b></div><div class="small">هر ۱۵° طول جغرافیایی ≈ ۱ ساعت اختلاف زمان خورشیدی</div></div>
+<div class="small">چرخش دوربین: کشیدن · بزرگ‌نمایی: اسکرول</div>
+</aside></div>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+const host=document.getElementById('view'), scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(42,1,.1,100);camera.position.set(0,2.4,8.2);
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputColorSpace=THREE.SRGBColorSpace;host.prepend(renderer.domElement);
+const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.minDistance=3.2;controls.maxDistance=14;
+scene.add(new THREE.AmbientLight(0x7898c9,.75));
+const sunLight=new THREE.DirectionalLight(0xfff0cf,2.6);scene.add(sunLight);
+const R=1.65, tilt=THREE.MathUtils.degToRad(23.5), earthPivot=new THREE.Group();scene.add(earthPivot);
+const earth=new THREE.Group();earthPivot.add(earth);earth.rotation.z=tilt;
+const loader=new THREE.TextureLoader();
+const globeMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:1,metalness:0});
+loader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg',t=>{t.colorSpace=THREE.SRGBColorSpace;globeMat.map=t;globeMat.needsUpdate=true});
+const globe=new THREE.Mesh(new THREE.SphereGeometry(R,64,48),globeMat);earth.add(globe);
+const nightMat=new THREE.MeshBasicMaterial({color:0x020716,transparent:true,opacity:.28,side:THREE.BackSide}); // subtle night-side overlay is driven by directional light
+const atmosphere=new THREE.Mesh(new THREE.SphereGeometry(R*1.012,48,32),new THREE.MeshBasicMaterial({color:0x3c9cff,transparent:true,opacity:.075,side:THREE.BackSide}));earth.add(atmosphere);
+function line(points,color,opacity=1,parent=earth){let g=new THREE.BufferGeometry().setFromPoints(points);let m=new THREE.LineBasicMaterial({color,transparent:opacity<1,opacity});let o=new THREE.Line(g,m);parent.add(o);return o}
+function latCircle(lat,color){let pts=[];let a=THREE.MathUtils.degToRad(lat);for(let i=0;i<=360;i++){let q=i*Math.PI/180;pts.push(new THREE.Vector3((R+.012)*Math.cos(a)*Math.cos(q),(R+.012)*Math.sin(a),(R+.012)*Math.cos(a)*Math.sin(q)))}return line(pts,color,.8)}
+latCircle(0,0x62e4ff);latCircle(23.5,0xffc66d);latCircle(-23.5,0xffc66d);
+const meridians=new THREE.Group();earth.add(meridians);
+for(let lon=0;lon<360;lon+=15){let pts=[];let l=lon*Math.PI/180;for(let j=0;j<=180;j++){let p=-Math.PI/2+j*Math.PI/180;pts.push(new THREE.Vector3((R+.018)*Math.cos(p)*Math.cos(l),(R+.018)*Math.sin(p),(R+.018)*Math.cos(p)*Math.sin(l)))}line(pts,lon%30===0?0x8bdcff:0x5b8ab8,lon%30===0?.42:.22,meridians)}
+const axisGroup=new THREE.Group();earth.add(axisGroup);
+line([new THREE.Vector3(0,-2.15,0),new THREE.Vector3(0,2.15,0)],0xffd17b,.95,axisGroup);
+function pole(y,label){let s=new THREE.Mesh(new THREE.SphereGeometry(.065,16,12),new THREE.MeshBasicMaterial({color:0xffd17b}));s.position.y=y;axisGroup.add(s)}
+pole(2.15);pole(-2.15);
+const equatorRing=new THREE.Group();earth.add(equatorRing);
+const sun=new THREE.Mesh(new THREE.SphereGeometry(.42,32,24),new THREE.MeshBasicMaterial({color:0xffd36b}));scene.add(sun);
+const sunGlow=new THREE.Mesh(new THREE.SphereGeometry(.62,24,16),new THREE.MeshBasicMaterial({color:0xffad35,transparent:true,opacity:.13}));sun.add(sunGlow);
+const orbitLinePts=[];for(let i=0;i<=360;i++){let a=i*Math.PI/180;orbitLinePts.push(new THREE.Vector3(4.1*Math.cos(a),0,2.55*Math.sin(a)))}line(orbitLinePts,0x52739f,.45,scene);
+const orbitDot=new THREE.Mesh(new THREE.SphereGeometry(.045,12,8),new THREE.MeshBasicMaterial({color:0x8de6ff}));scene.add(orbitDot);
+const starGeo=new THREE.BufferGeometry(), starPts=[];for(let i=0;i<1300;i++){let v=new THREE.Vector3((Math.random()-.5)*50,(Math.random()-.5)*35,(Math.random()-.5)*50);if(v.length()>8)starPts.push(v.x,v.y,v.z)}starGeo.setAttribute('position',new THREE.Float32BufferAttribute(starPts,3));scene.add(new THREE.Points(starGeo,new THREE.PointsMaterial({color:0xaac9ff,size:.018,transparent:true,opacity:.65})));
+const eventNames=['اعتدال بهاری','انقلاب تابستانی','اعتدال پاییزی','انقلاب زمستانی'];
+let angle=0,dayMin=720,speed=1,playing=true;
+const $=id=>document.getElementById(id), fa=n=>new Intl.NumberFormat('fa-IR').format(n);
+function timeStr(v){v=((Math.round(v)%1440)+1440)%1440;return fa(Math.floor(v/60)).padStart(2,'۰')+':'+fa(v%60).padStart(2,'۰')}
+function updateUI(){let idx=Math.round(angle/90)%4;$('orbitVal').textContent=eventNames[idx];$('seasonNow').textContent=eventNames[idx];$('orbit').value=angle;$('day').value=dayMin;$('dayVal').textContent=timeStr(dayMin);$('clock').textContent=timeStr(dayMin);let lon=((dayMin/4)-180+360)%360-180;$('lon').textContent=fa(Math.round(lon))+'°';let offset=Number($('city').value);$('solarTime').textContent=timeStr(dayMin+offset*60);$('officialTime').textContent=timeStr(dayMin+offset*60);$('speedVal').textContent=fa(speed.toFixed(1))+'×'}
+function setAngle(v){angle=(v+360)%360;let a=angle*Math.PI/180;earthPivot.position.set(4.1*Math.cos(a),0,2.55*Math.sin(a));earthPivot.rotation.y=0;orbitDot.position.copy(earthPivot.position);sun.position.set(0,0,0);sunLight.position.set(0,0,0);sunLight.position.set(0,0,0); // illumination direction set below
+let dir=new THREE.Vector3(-earthPivot.position.x,0,-earthPivot.position.z).normalize();sunLight.position.copy(dir.multiplyScalar(10));sun.position.copy(sunLight.position.clone().normalize().multiplyScalar(100));sun.position.set(0,0,0);
+earth.rotation.y=0;earth.rotation.y=THREE.MathUtils.degToRad(dayMin/4);
+updateUI()}
+$('play').onclick=()=>{playing=!playing;$('play').textContent=playing?'Ⅱ مکث':'▶ ادامه';$('play').classList.toggle('active',playing)};
+$('step').onclick=()=>{dayMin=(dayMin+10)%1440;updateEarth()};
+$('reset').onclick=()=>{angle=0;dayMin=720;speed=1;playing=true;$('speed').value=35;$('play').textContent='Ⅱ مکث';updateEarth();setAngle(0)};
+$('speed').oninput=e=>{speed=Number(e.target.value)/20;updateUI()};
+$('day').oninput=e=>{dayMin=Number(e.target.value);updateEarth()};
+$('orbit').oninput=e=>{setAngle(Number(e.target.value))};
+document.querySelectorAll('[data-season]').forEach(b=>b.onclick=()=>setAngle(Number(b.dataset.season)));
+['zones','equator','axis','sunlight'].forEach(id=>$(id).onchange=()=>{if(id==='zones')meridians.visible=$(id).checked;if(id==='equator')earth.children.filter(x=>x!==globe&&x!==atmosphere&&x!==meridians&&x!==axisGroup).forEach(x=>x.visible=$(id).checked);if(id==='axis')axisGroup.visible=$(id).checked});
+$('labels').onchange=()=>{$('modeTag').textContent=$('labels').checked?'مدل خورشیدمرکزی':'زمین سه‌بعدی'};
+$('city').onchange=updateUI;
+function updateEarth(){earth.rotation.y=THREE.MathUtils.degToRad(dayMin/4);updateUI()}
+function resize(){let w=host.clientWidth,h=host.clientHeight;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h)}
+window.addEventListener('resize',resize);resize();setAngle(0);updateEarth();
+let last=performance.now();function animate(now){requestAnimationFrame(animate);let dt=Math.min((now-last)/1000,.1);last=now;if(playing){dayMin=(dayMin+dt*speed*3)%1440;angle=(angle+dt*speed*.7)%360;setAngle(angle);updateEarth()}controls.update();renderer.render(scene,camera)}requestAnimationFrame(animate);
+</script></body></html>
